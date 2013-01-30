@@ -1466,6 +1466,9 @@
 
         <activity android:name=".cyanogenmod.SystemSettings" />
 
+        <!-- tmtmtm -->
+        <activity android:name=".cyanogenmod.UsbHostSettings" />
+
         <activity android:name=".cyanogenmod.PerformanceSettings" />
 
         <activity android:name="Settings$QuietHoursSettingsActivity"
