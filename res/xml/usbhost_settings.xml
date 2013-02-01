@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (C) 2012 The CyanogenMod Project
+     Copyright (C) 2013 Timur Mehrvarz
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -19,7 +20,6 @@
     android:title="@string/usbhost_settings_title"
     xmlns:settings="http://schemas.android.com/apk/res/com.android.settings">
     
-    <!-- tmtmtm -->
     <CheckBoxPreference
         android:key="fixed_installation"
         android:title="@string/fixed_installation_title"
@@ -51,23 +51,6 @@
         android:fragment="com.android.settings.cyanogenmod.Processor"
         android:title="@string/processor_title"
         android:summary="@string/processor_summary" />
-
-    <PreferenceScreen
-        android:key="ioscheduler"
-        android:fragment="com.android.settings.cyanogenmod.IOScheduler"
-        android:title="@string/io_scheds_title"
-        android:summary="@string/io_scheds_summary" />
-
-    <PreferenceScreen
-        android:key="memory_management"
-        android:fragment="com.android.settings.cyanogenmod.MemoryManagement"
-        android:title="@string/memory_management_title"
-        android:summary="@string/memory_management_summary" />
-
-    <CheckBoxPreference
-        android:key="pref_use_16bpp_alpha"
-        android:title="@string/pref_use_16bpp_alpha_title"
-        android:summary="@string/pref_use_16bpp_alpha_summary" />
 
     <ListPreference
         android:key="pref_use_dithering"

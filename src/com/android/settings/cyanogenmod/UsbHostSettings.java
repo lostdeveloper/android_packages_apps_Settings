@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 The CyanogenMod Project
+ * Copyright (C) 2013 Timur Mehrvarz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,20 +62,6 @@ public class UsbHostSettings extends SettingsPreferenceFragment
 
 
 /*
-    private static final String USE_DITHERING_PREF = "pref_use_dithering";
-
-    private static final String USE_DITHERING_PERSIST_PROP = "persist.sys.use_dithering";
-
-    private static final String USE_DITHERING_DEFAULT = "1";
-
-    private static final String USE_16BPP_ALPHA_PREF = "pref_use_16bpp_alpha";
-
-    private static final String USE_16BPP_ALPHA_PROP = "persist.sys.use_16bpp_alpha";
-
-    private ListPreference mUseDitheringPref;
-
-    private CheckBoxPreference mUse16bppAlphaPref;
-
     private AlertDialog alertDialog;
 */
     @Override
@@ -120,18 +107,6 @@ public class UsbHostSettings extends SettingsPreferenceFragment
                                                            USE_LANDSCAPE_UI_DEFAULT);
             mLandscapeUIPref.setChecked("1".equals(useLandscapeMode));
             activateLandscapeModeBuildProp("1".equals(useLandscapeMode));
-
-/*
-            String useDithering = SystemProperties.get(USE_DITHERING_PERSIST_PROP, USE_DITHERING_DEFAULT);
-            mUseDitheringPref = (ListPreference) prefSet.findPreference(USE_DITHERING_PREF);
-            mUseDitheringPref.setOnPreferenceChangeListener(this);
-            mUseDitheringPref.setValue(useDithering);
-            mUseDitheringPref.setSummary(mUseDitheringPref.getEntry());
-
-            mUse16bppAlphaPref = (CheckBoxPreference) prefSet.findPreference(USE_16BPP_ALPHA_PREF);
-            String use16bppAlpha = SystemProperties.get(USE_16BPP_ALPHA_PROP, "0");
-            mUse16bppAlphaPref.setChecked("1".equals(use16bppAlpha));
-*/
 
             /* Display the warning dialog */
 /*
@@ -247,5 +222,4 @@ public class UsbHostSettings extends SettingsPreferenceFragment
 */
         return true;
     }
-
 }
