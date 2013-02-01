@@ -47,10 +47,17 @@ public class UsbHostSettings extends SettingsPreferenceFragment
 
     private static final String HP_WIRED_ACCESSORY_PREF = "hotplug_wired_accessory";   // from res/values/strings.xml
     private CheckBoxPreference mHpWiredAccessoryPref;
+    private static final String USE_HP_WIRED_ACCESSORY_PERSIST_PROP = "persist.sys.use_wired_accessory";
+    private static final String USE_HP_WIRED_ACCESSORY_DEFAULT = "1";
 
     public static final String HP_ON_BOOT_FILE = "/sys/kernel/usbhost/usbhost_hotplug_on_boot";
     private static final String HP_ON_BOOT_PREF = "hotplug_on_boot";   // from res/values/strings.xml
     private CheckBoxPreference mHpOnBootPref;
+
+    private static final String LANDSCAPE_UI_PREF = "landscape_mode";   // from res/values/strings.xml
+    private CheckBoxPreference mLandscapeUIPref;
+    private static final String USE_LANDSCAPE_UI_PERSIST_PROP = "persist.sys.use_landscape_mode";
+    private static final String USE_LANDSCAPE_UI_DEFAULT = "0";
 
 
 /*
@@ -81,37 +88,40 @@ public class UsbHostSettings extends SettingsPreferenceFragment
         mFastChargeInHostModePref = (CheckBoxPreference) prefSet.findPreference(FASTCHARGE_IN_HOSTMODE_PREF);
         mHpWiredAccessoryPref = (CheckBoxPreference) prefSet.findPreference(HP_WIRED_ACCESSORY_PREF);
         mHpOnBootPref = (CheckBoxPreference) prefSet.findPreference(HP_ON_BOOT_PREF);
+        mLandscapeUIPref = (CheckBoxPreference) prefSet.findPreference(LANDSCAPE_UI_PREF);
         String temp;
 
         if((temp = Utils.fileReadOneLine(FI_MODE_FILE)) != null) {
             mFiModePref.setChecked("1".equals(temp));
         }
-        //mFiModePref.setEnabled(false);
+        mFiModePref.setEnabled(false);
 
         if((temp = Utils.fileReadOneLine(FASTCHARGE_IN_HOSTMODE_FILE)) != null) {
             mFastChargeInHostModePref.setChecked("1".equals(temp));
         }
         //mFastChargeInHostModePref.setEnabled(false);
 
-        mHpWiredAccessoryPref.setEnabled(false);
+        //mHpWiredAccessoryPref.setEnabled(false);
 
+        //mHpOnBootPref.setEnabled(false);
         if((temp = Utils.fileReadOneLine(HP_ON_BOOT_FILE)) != null) {
             mHpOnBootPref.setChecked("1".equals(temp));
         }
-        mHpOnBootPref.setEnabled(false);
 
-/*
-        if (!Utils.fileExists(FREQ_CUR_FILE)) {
-            FREQ_CUR_FILE = FREQINFO_CUR_FILE;
-        }
+        mLandscapeUIPref.setEnabled(false);
 
         if (getPreferenceManager() != null) {
 
-            addPreferencesFromResource(R.xml.usbhost_settings);
+            String useHpWiredAccessory = SystemProperties.get(USE_HP_WIRED_ACCESSORY_PERSIST_PROP,
+                                                              USE_HP_WIRED_ACCESSORY_DEFAULT);
+            mHpWiredAccessoryPref.setChecked("1".equals(useHpWiredAccessory));
 
-            PreferenceScreen prefSet = getPreferenceScreen();
+            String useLandscapeMode = SystemProperties.get(USE_LANDSCAPE_UI_PERSIST_PROP,
+                                                           USE_LANDSCAPE_UI_DEFAULT);
+            mLandscapeUIPref.setChecked("1".equals(useLandscapeMode));
+            activateLandscapeModeBuildProp("1".equals(useLandscapeMode));
 
-
+/*
             String useDithering = SystemProperties.get(USE_DITHERING_PERSIST_PROP, USE_DITHERING_DEFAULT);
             mUseDitheringPref = (ListPreference) prefSet.findPreference(USE_DITHERING_PREF);
             mUseDitheringPref.setOnPreferenceChangeListener(this);
@@ -122,6 +132,7 @@ public class UsbHostSettings extends SettingsPreferenceFragment
             String use16bppAlpha = SystemProperties.get(USE_16BPP_ALPHA_PROP, "0");
             mUse16bppAlphaPref.setChecked("1".equals(use16bppAlpha));
 */
+
             /* Display the warning dialog */
 /*
             alertDialog = new AlertDialog.Builder(getActivity()).create();
@@ -140,21 +151,13 @@ public class UsbHostSettings extends SettingsPreferenceFragment
                 }
             });
             alertDialog.show();
-        }
 */
+        }
     }
 
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-/*
-        if (preference == mUse16bppAlphaPref) {
-            SystemProperties.set(USE_16BPP_ALPHA_PROP,
-                    mUse16bppAlphaPref.isChecked() ? "1" : "0");
-        } else {
-            // If we didn't handle it, let preferences handle it.
-            return super.onPreferenceTreeClick(preferenceScreen, preference);
-        }
-*/
+
         if(preference == mFiModePref) {
             Log.i(TAG, "onPreferenceTreeClick mFiModePref checked="+mFiModePref.isChecked());
             if (Utils.fileWriteOneLine(FI_MODE_FILE, mFiModePref.isChecked() ? "1" : "0")) {
@@ -171,16 +174,11 @@ public class UsbHostSettings extends SettingsPreferenceFragment
             }
             Log.i(TAG, "onPreferenceTreeClick failed");
 
-
         } else if(preference == mHpWiredAccessoryPref) {
-/* TODO: need to store mHpWiredAccessoryPref state in standard preferences
-            Log.i(TAG, "onPreferenceTreeClick mHpOnBootPref checked="+mHpOnBootPref.isChecked());
-            if (Utils.fileWriteOneLine(HP_ON_BOOT_FILE, mHpOnBootPref.isChecked() ? "1" : "0")) {
-                Log.i(TAG, "onPreferenceTreeClick value changed");
-                return true;
-            }
-            Log.i(TAG, "onPreferenceTreeClick failed");
-*/
+            SystemProperties.set(USE_HP_WIRED_ACCESSORY_PERSIST_PROP,
+                    mHpWiredAccessoryPref.isChecked() ? "1" : "0");
+            return true;
+                    
         } else if(preference == mHpOnBootPref) {
             Log.i(TAG, "onPreferenceTreeClick mHpOnBootPref checked="+mHpOnBootPref.isChecked());
             if (Utils.fileWriteOneLine(HP_ON_BOOT_FILE, mHpOnBootPref.isChecked() ? "1" : "0")) {
@@ -189,14 +187,16 @@ public class UsbHostSettings extends SettingsPreferenceFragment
             }
             Log.i(TAG, "onPreferenceTreeClick failed");
 
-        } else {
-            // If we didn't handle it, let preferences handle it.
-            Log.i(TAG, "onPreferenceTreeClick other");
-            return super.onPreferenceTreeClick(preferenceScreen, preference);
+        } else if(preference == mLandscapeUIPref) {
+            SystemProperties.set(USE_LANDSCAPE_UI_PERSIST_PROP,
+                    mLandscapeUIPref.isChecked() ? "1" : "0");
+            activateLandscapeModeBuildProp(mLandscapeUIPref.isChecked());
+            return true;
+                    
         }
-
-        Log.i(TAG, "onPreferenceTreeClick return false");
-        return false;
+        // If we didn't handle it, let preferences handle it.
+        Log.i(TAG, "onPreferenceTreeClick not handled");
+        return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
 
     public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -228,6 +228,24 @@ public class UsbHostSettings extends SettingsPreferenceFragment
 */
         Log.i(TAG, "onPreferenceChange not implemented");
         return false;
-   }
+    }
+
+    private boolean activateLandscapeModeBuildProp(boolean state) {
+/*
+        FileInputStream fis = openFileInput("/system/build.prop");
+        String content = "";
+        byte[] input = new byte[fis.available()];
+        while (fis.read(input) != -1) {}
+        content += new String(input);
+        
+        // TODO: patch "ro.sf.lcd_density=xxx"
+
+        DataOutputStream outstream= new DataOutputStream(new FileOutputStream(file,false));
+        String body = content;
+        outstream.write(body.getBytes());
+        outstream.close();
+*/
+        return true;
+    }
 
 }

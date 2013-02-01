@@ -40,6 +40,10 @@
         android:title="@string/hotplug_on_boot_title"
         android:summary="@string/hotplug_on_boot_summary" />
 
+    <CheckBoxPreference
+        android:key="landscape_mode"
+        android:title="@string/landscape_mode_title"
+        android:summary="@string/landscape_mode_summary" />
 
 <!--
     <PreferenceScreen
