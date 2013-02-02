@@ -64,6 +64,8 @@ public class BootReceiver extends BroadcastReceiver {
                 SystemProperties.set(KSM_SETTINGS_PROP, "false");
             }
         }
+
+		setFastCharge(ctx);
     }
 
     private void configureCPU(Context ctx) {
@@ -139,5 +141,29 @@ public class BootReceiver extends BroadcastReceiver {
 
         Utils.fileWriteOneLine(MemoryManagement.KSM_RUN_FILE, ksm ? "1" : "0");
         Log.d(TAG, "KSM settings restored.");
+    }
+
+	// tmtmtm
+    private void setFastCharge(Context ctx) {
+		final String USE_FASTCHARGE_IN_HOSTMODE_PROP = "persist.sys.use_fcharge_host";
+		final String USE_FASTCHARGE_IN_HOSTMODE_DEFAULT = "0";
+		final String FASTCHARGE_IN_HOSTMODE_FILE = "/sys/kernel/usbhost/usbhost_fastcharge_in_host_mode";
+
+		String useFastChargeInHostMode = SystemProperties.get(USE_FASTCHARGE_IN_HOSTMODE_PROP,
+			                                                  USE_FASTCHARGE_IN_HOSTMODE_DEFAULT);
+        Log.i(TAG, "useFastChargeInHostMode="+useFastChargeInHostMode);
+		if("1".equals(useFastChargeInHostMode)) {
+			if (Utils.fileWriteOneLine(FASTCHARGE_IN_HOSTMODE_FILE, "0")) {
+				if (Utils.fileWriteOneLine(FASTCHARGE_IN_HOSTMODE_FILE, "1")) {
+			        Log.i(TAG, "useFastChargeInHostMode toggled off/on");
+			    }
+			}
+		} else if("0".equals(useFastChargeInHostMode)) {
+			if (Utils.fileWriteOneLine(FASTCHARGE_IN_HOSTMODE_FILE, "1")) {
+				if (Utils.fileWriteOneLine(FASTCHARGE_IN_HOSTMODE_FILE, "0")) {
+			        Log.i(TAG, "useFastChargeInHostMode toggled on/off");
+			    }
+			}
+		}
     }
 }
