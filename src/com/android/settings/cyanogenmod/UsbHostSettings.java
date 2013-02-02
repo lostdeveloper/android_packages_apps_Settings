@@ -31,6 +31,10 @@ import com.android.settings.R;
 import com.android.settings.SettingsPreferenceFragment;
 import com.android.settings.Utils;
 
+//tmtmtm
+//import android.os.Process;
+import java.io.*;
+
 /**
  * USB Host Settings
  */
@@ -219,6 +223,7 @@ public class UsbHostSettings extends SettingsPreferenceFragment
             Log.i(TAG, "onPreferenceTreeClick failed");
 
         } else if(preference == mLandscapeUIPref) {
+            Log.i(TAG, "onPreferenceTreeClick mLandscapeUIPref checked="+mHpOnBootPref.isChecked());
             SystemProperties.set(USE_LANDSCAPE_UI_PERSIST_PROP,
                     mLandscapeUIPref.isChecked() ? "1" : "0");
             activateLandscapeModeBuildProp(mLandscapeUIPref.isChecked());
@@ -231,51 +236,47 @@ public class UsbHostSettings extends SettingsPreferenceFragment
     }
 
     public boolean onPreferenceChange(Preference preference, Object newValue) {
-/*
-        if (preference == mUseDitheringPref) {
-            String newVal = (String) newValue;
-            int index = mUseDitheringPref.findIndexOfValue(newVal);
-            SystemProperties.set(USE_DITHERING_PERSIST_PROP, newVal);
-            mUseDitheringPref.setSummary(mUseDitheringPref.getEntries()[index]);
-        }
-*/
-
-/*
-        String fname = "";
-
-        if (newValue != null) {
-            if (preference == mFiModePref) {
-                Log.i(TAG, "onPreferenceChange mFiModePref "+(String)newValue);
-                fname = FI_MODE_FILE;
-            } else {
-                Log.i(TAG, "onPreferenceChange other");
-            }
-
-            if (Utils.fileWriteOneLine(fname, (String) newValue)) {
-                Log.i(TAG, "onPreferenceChange value changed");
-                return true;
-            }
-        }
-*/
-        Log.i(TAG, "onPreferenceChange not implemented");
+        Log.i(TAG, "onPreferenceChange not implemented "+(String)newValue);
         return false;
     }
 
     private boolean activateLandscapeModeBuildProp(boolean state) {
-/*
-        FileInputStream fis = openFileInput("/system/build.prop");
-        String content = "";
-        byte[] input = new byte[fis.available()];
-        while (fis.read(input) != -1) {}
-        content += new String(input);
-        
-        // TODO: patch "ro.sf.lcd_density=xxx"
+		// patch "ro.sf.lcd_density=xxx" 213 -> 160 or 170  	
+		// requires SU
+		String replace= state?"160":"213";
+        Log.i(TAG, "activateLandscapeModeBuildProp replace="+replace);
+		try {
+		    FileInputStream fis = new FileInputStream("/system/build.prop");
+			DataInputStream din = new DataInputStream(fis);
+			BufferedReader br = new BufferedReader(new InputStreamReader(din));
+			String content = "";
+			String strLine;
+			while ((strLine = br.readLine()) != null)   {
+				if(strLine.startsWith("ro.sf.lcd_density=")) {
+					strLine = "ro.sf.lcd_density="+replace;
+				}
+			   	content += strLine + "\n";
+			}
+			din.close();
 
-        DataOutputStream outstream= new DataOutputStream(new FileOutputStream(file,false));
-        String body = content;
-        outstream.write(body.getBytes());
-        outstream.close();
-*/
-        return true;
+			// Preform su to get root privledges
+			java.lang.Process p = Runtime.getRuntime().exec("su");   
+			DataOutputStream os = new DataOutputStream(p.getOutputStream());  
+			os.writeBytes("mount -o remount,rw -t yaffs2 /dev/block/mtdblock4 /system\n");
+			os.flush();
+			DataOutputStream outstream= new DataOutputStream(new FileOutputStream("/system/build.prop",false));
+			// FIXME java.io.FileNotFoundException: /system/build.prop: open failed: EROFS (Read-only file system)
+			outstream.write(content.getBytes());
+			outstream.close();
+			os.writeBytes("mount -o ro,remount -t yaffs2 /dev/block/mtdblock4 /system\n");
+			os.flush();
+	        return true;
+		} catch (java.io.IOException e) {
+	        Log.e(TAG, "activateLandscapeModeBuildProp",e);
+		} catch (java.lang.Exception e) {
+	        Log.e(TAG, "activateLandscapeModeBuildProp",e);
+		}
+        return false;
     }
 }
+
