@@ -20,30 +20,55 @@
     android:title="@string/usbhost_settings_title"
     xmlns:settings="http://schemas.android.com/apk/res/com.android.settings">
     
-    <CheckBoxPreference
-        android:key="fixed_installation"
-        android:title="@string/fixed_installation_title"
-        android:summary="@string/fixed_installation_summary" />
+    <PreferenceCategory android:key="usb_host_category"
+            android:title="@string/usb_host_category" >
 
-    <CheckBoxPreference
-        android:key="fastcharge_in_host_mode"
-        android:title="@string/fastcharge_in_host_mode_title"
-        android:summary="@string/fastcharge_in_host_mode_summary" />
+		<CheckBoxPreference
+		    android:key="fixed_installation"
+		    android:title="@string/fixed_installation_title"
+		    android:summary="@string/fixed_installation_summary" />
 
-    <CheckBoxPreference
-        android:key="hotplug_wired_accessory"
-        android:title="@string/hotplug_wired_accessory_title"
-        android:summary="@string/hotplug_wired_accessory_summary" />
+		<CheckBoxPreference
+		    android:key="fastcharge_in_host_mode"
+		    android:title="@string/fastcharge_in_host_mode_title"
+		    android:summary="@string/fastcharge_in_host_mode_summary" />
 
-    <CheckBoxPreference
-        android:key="hotplug_on_boot"
-        android:title="@string/hotplug_on_boot_title"
-        android:summary="@string/hotplug_on_boot_summary" />
+        <!--com.android.settings.WrappingSwitchPreference
+            android:key="fastcharge_in_host_mode"
+            android:title="@string/fastcharge_in_host_mode_title"
+            android:summary="@string/fastcharge_in_host_mode_summary"
+            android:persistent="true"/-->
+    </PreferenceCategory>
 
-    <CheckBoxPreference
-        android:key="landscape_mode"
-        android:title="@string/landscape_mode_title"
-        android:summary="@string/landscape_mode_summary" />
+    <PreferenceCategory android:key="usb_audio_category"
+            android:title="@string/usb_audio_category" >
+		<CheckBoxPreference
+		    android:key="hotplug_wired_accessory"
+		    android:title="@string/hotplug_wired_accessory_title"
+		    android:summary="@string/hotplug_wired_accessory_summary" />
+
+		<CheckBoxPreference
+		    android:key="hotplug_on_boot"
+		    android:title="@string/hotplug_on_boot_title"
+		    android:summary="@string/hotplug_on_boot_summary" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:key="usb_info_category"
+            android:title="@string/usb_info_category" >
+    </PreferenceCategory>
+
+    <PreferenceCategory android:key="usb_system_category"
+            android:title="@string/usb_system_category" >
+		<!--CheckBoxPreference
+		    android:key="landscape_mode"
+		    android:title="@string/landscape_mode_title"
+		    android:summary="@string/landscape_mode_summary" /-->
+        <com.android.settings.WrappingSwitchPreference
+            android:key="landscape_mode"
+            android:title="@string/landscape_mode_title"
+            android:summary="@string/landscape_mode_summary"
+            android:persistent="true"/>
+    </PreferenceCategory>
 
 <!--
     <PreferenceScreen

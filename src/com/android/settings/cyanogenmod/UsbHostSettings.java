@@ -22,17 +22,18 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.SystemProperties;
 import android.preference.CheckBoxPreference;
+import android.preference.SwitchPreference;
 import android.preference.Preference;
 import android.preference.ListPreference;
 import android.preference.PreferenceScreen;
 import android.util.Log;
+import android.app.AlertDialog.Builder;
+//import android.content.Context;
 
 import com.android.settings.R;
 import com.android.settings.SettingsPreferenceFragment;
 import com.android.settings.Utils;
 
-//tmtmtm
-//import android.os.Process;
 import java.io.*;
 
 /**
@@ -51,6 +52,7 @@ public class UsbHostSettings extends SettingsPreferenceFragment
     private static final String FASTCHARGE_IN_HOSTMODE_FILE = "/sys/kernel/usbhost/usbhost_fastcharge_in_host_mode";
     private static final String FASTCHARGE_IN_HOSTMODE_PREF = "fastcharge_in_host_mode";   // from res/values/strings.xml
     private CheckBoxPreference mFastChargeInHostModePref;
+  //private SwitchPreference mFastChargeInHostModePref;
 	private static final String USE_FASTCHARGE_IN_HOSTMODE_PROP = "persist.sys.use_fcharge_host";
     private static final String USE_FASTCHARGE_IN_HOSTMODE_DEFAULT = "0";
 
@@ -64,52 +66,31 @@ public class UsbHostSettings extends SettingsPreferenceFragment
     private CheckBoxPreference mHpOnBootPref;
 
     private static final String LANDSCAPE_UI_PREF = "landscape_mode";   // from res/values/strings.xml
-    private CheckBoxPreference mLandscapeUIPref;
+  //private CheckBoxPreference mLandscapeUIPref;
+    private SwitchPreference mLandscapeUIPref;
     private static final String USE_LANDSCAPE_UI_PERSIST_PROP = "persist.sys.use_landscape_mode";
     private static final String USE_LANDSCAPE_UI_DEFAULT = "0";
 
-/*--------------------
+    //private AlertDialog alertDialog;
 
-    private static final String USE_FASTCHARGE_IN_HOSTMODE_PROP = "persist.sys.use_fastcharge_hostmode";
-    private static final String USE_FASTCHARGE_IN_HOSTMODE_DEFAULT = "0";
-
-	String useFastChargeInHostMode = SystemProperties.get(USE_FASTCHARGE_IN_HOSTMODE_PROP,
-	                                                      USE_FASTCHARGE_IN_HOSTMODE_DEFAULT);
-
-    if("1".equals(useFastChargeInHostMode)) {
-		if (Utils.fileWriteOneLine(FASTCHARGE_IN_HOSTMODE_FILE, "0"))
-			Utils.fileWriteOneLine(FASTCHARGE_IN_HOSTMODE_FILE, "1");
-    } else if("0".equals(useFastChargeInHostMode)) {
-		if (Utils.fileWriteOneLine(FASTCHARGE_IN_HOSTMODE_FILE, "1"))
-			Utils.fileWriteOneLine(FASTCHARGE_IN_HOSTMODE_FILE, "0");
-    }
-
-"1".eq 
-    if (Utils.fileWriteOneLine(FASTCHARGE_IN_HOSTMODE_FILE, mFastChargeInHostModePref.isChecked() ? "1" : "0")) {
-        Log.i(TAG, "onPreferenceTreeClick value changed");
-        SystemProperties.set(USE_FASTCHARGE_IN_HOSTMODE_PROP,
-                mFastChargeInHostModePref.isChecked() ? "1" : "0");
-        return true;
-    }
-
-*/
-
-
-/*
-    private AlertDialog alertDialog;
-*/
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //context = this;
 
         addPreferencesFromResource(R.xml.usbhost_settings);
 
         PreferenceScreen prefSet = getPreferenceScreen();
         mFiModePref = (CheckBoxPreference) prefSet.findPreference(FI_MODE_PREF);
         mFastChargeInHostModePref = (CheckBoxPreference) prefSet.findPreference(FASTCHARGE_IN_HOSTMODE_PREF);
+      //mFastChargeInHostModePref = (SwitchPreference) prefSet.findPreference(FASTCHARGE_IN_HOSTMODE_PREF);
+      //mFastChargeInHostModePref.setOnPreferenceChangeListener(this);
+
         mHpWiredAccessoryPref = (CheckBoxPreference) prefSet.findPreference(HP_WIRED_ACCESSORY_PREF);
         mHpOnBootPref = (CheckBoxPreference) prefSet.findPreference(HP_ON_BOOT_PREF);
-        mLandscapeUIPref = (CheckBoxPreference) prefSet.findPreference(LANDSCAPE_UI_PREF);
+      //mLandscapeUIPref = (CheckBoxPreference) prefSet.findPreference(LANDSCAPE_UI_PREF);
+        mLandscapeUIPref = (SwitchPreference) prefSet.findPreference(LANDSCAPE_UI_PREF);
+        mLandscapeUIPref.setOnPreferenceChangeListener(this);
         String temp;
 
 		int curHostMode = 0;
@@ -131,7 +112,7 @@ public class UsbHostSettings extends SettingsPreferenceFragment
             mHpOnBootPref.setChecked("1".equals(temp));
         }
 
-		// TODO: landscape is off + it's checkbox is disabled 
+		// landscape is off + it's checkbox is disabled 
         //mLandscapeUIPref.setEnabled(false);
 
         if (getPreferenceManager() != null) {
@@ -146,7 +127,6 @@ public class UsbHostSettings extends SettingsPreferenceFragment
             String useLandscapeMode = SystemProperties.get(USE_LANDSCAPE_UI_PERSIST_PROP,
                                                            USE_LANDSCAPE_UI_DEFAULT);
             mLandscapeUIPref.setChecked("1".equals(useLandscapeMode));
-            activateLandscapeModeBuildProp("1".equals(useLandscapeMode));
 
 			String useFastChargeInHostMode = SystemProperties.get(USE_FASTCHARGE_IN_HOSTMODE_PROP,
 			                                                      USE_FASTCHARGE_IN_HOSTMODE_DEFAULT);
@@ -221,28 +201,51 @@ public class UsbHostSettings extends SettingsPreferenceFragment
                 return true;
             }
             Log.i(TAG, "onPreferenceTreeClick failed");
-
-        } else if(preference == mLandscapeUIPref) {
-            Log.i(TAG, "onPreferenceTreeClick mLandscapeUIPref checked="+mHpOnBootPref.isChecked());
-            SystemProperties.set(USE_LANDSCAPE_UI_PERSIST_PROP,
-                    mLandscapeUIPref.isChecked() ? "1" : "0");
-            activateLandscapeModeBuildProp(mLandscapeUIPref.isChecked());
-            return true;
-                    
         }
         // If we didn't handle it, let preferences handle it.
         Log.i(TAG, "onPreferenceTreeClick not handled");
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
 
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
-        Log.i(TAG, "onPreferenceChange not implemented "+(String)newValue);
+    @Override
+    public boolean onPreferenceChange(Preference preference, final Object newValue) {
+        if (preference.getKey().equals(LANDSCAPE_UI_PREF)) {
+            Log.i(TAG, "onPreferenceChange mLandscapeUIPref checked="+newValue);
+            //activateLandscapeModeBuildProp((Boolean)newValue);
+
+			DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					switch (which){
+					case DialogInterface.BUTTON_POSITIVE:
+						//Yes button clicked
+			            activateLandscapeModeBuildProp((Boolean)newValue);
+						break;
+
+					case DialogInterface.BUTTON_NEGATIVE:
+						//No button clicked
+					    mLandscapeUIPref.setChecked(!mLandscapeUIPref.isChecked());  // undo
+						break;
+					}
+				}
+			};
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			String msg = (Boolean)newValue ? "Reboot to Landscape UI?" : "Reboot to Standard UI?";
+			builder.setMessage(msg).setPositiveButton("Yes", dialogClickListener)
+				.setNegativeButton("No", dialogClickListener).show();
+            return true;
+        }
+        //Log.i(TAG, "onPreferenceChange not implemented "+newValue);
         return false;
     }
 
+
+    
     private boolean activateLandscapeModeBuildProp(boolean state) {
 		// patch "ro.sf.lcd_density=xxx" 213 -> 160 or 170  	
 		// requires SU
+        SystemProperties.set(USE_LANDSCAPE_UI_PERSIST_PROP, state ? "1" : "0");
+
 		String replace= state?"160":"213";
         Log.i(TAG, "activateLandscapeModeBuildProp replace="+replace);
 		try {
@@ -259,18 +262,24 @@ public class UsbHostSettings extends SettingsPreferenceFragment
 			}
 			din.close();
 
-			// Preform su to get root privledges
-			java.lang.Process p = Runtime.getRuntime().exec("su");   
-			DataOutputStream os = new DataOutputStream(p.getOutputStream());  
-			os.writeBytes("mount -o remount,rw -t yaffs2 /dev/block/mtdblock4 /system\n");
-			os.flush();
-			DataOutputStream outstream= new DataOutputStream(new FileOutputStream("/system/build.prop",false));
-			// FIXME java.io.FileNotFoundException: /system/build.prop: open failed: EROFS (Read-only file system)
+			DataOutputStream outstream= new DataOutputStream(new FileOutputStream("/data/build.prop",false));
 			outstream.write(content.getBytes());
 			outstream.close();
-			os.writeBytes("mount -o ro,remount -t yaffs2 /dev/block/mtdblock4 /system\n");
-			os.flush();
+
+			// Preform cp as su
+	        String cmd = "su -c 'mount -o remount,rw -t yaffs2 /dev/block/mtdblock4 /system && " +
+                                "cp /data/build.prop /system && " +
+                                "mount -o ro,remount -t yaffs2 /dev/block/mtdblock4 /system && " +
+                                "reboot now'";
+	        Log.i(TAG, "activateLandscapeModeBuildProp cmd="+cmd);
+			Process p = Runtime.getRuntime().exec("su");
+			DataOutputStream os = new DataOutputStream(p.getOutputStream());  
+		    os.writeBytes(cmd+"\n");  
+		    os.writeBytes("exit\n");  
+		    os.flush();  
+	        p.waitFor();
 	        return true;
+
 		} catch (java.io.IOException e) {
 	        Log.e(TAG, "activateLandscapeModeBuildProp",e);
 		} catch (java.lang.Exception e) {

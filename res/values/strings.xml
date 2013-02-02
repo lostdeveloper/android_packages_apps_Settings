@@ -3003,6 +3003,11 @@
     <!-- UsbHost Settings -->
     <string name="usbhost_settings_title">USB Host</string>
 
+    <string name="usb_host_category">USB Host</string>
+    <string name="usb_audio_category">USB Audio</string>
+    <string name="usb_info_category">USB Information</string>
+    <string name="usb_system_category">System</string>
+
     <!-- Fixed Installation -->
     <string name="fixed_installation_title">Fixed installation mode</string>
     <string name="fixed_installation_summary">Allows for reliable USB Host deep sleep + wake-on-power behavior. USB slave devices will not be battery powered in FI-mode.\n\nDisable FI-mode for pure OTG.</string> 
@@ -3021,7 +3026,7 @@
 
     <!-- landscape -->
     <string name="landscape_mode_title">Landscape UI</string>
-    <string name="landscape_mode_summary">Activate landscape UI. Mode change requires reboot.</string>
+    <string name="landscape_mode_summary">Mode change requires reboot.</string>
 
 
     <!-- Development Settings.  the title for the item to take the user to Development settings.  Development settings are settings meant for application developers.  -->
