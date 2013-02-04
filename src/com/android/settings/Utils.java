@@ -78,6 +78,7 @@ import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import android.os.SystemProperties;  // tmtmtm
 
 public class Utils {
 
@@ -666,6 +667,15 @@ public class Utils {
                 // 720dp: "tablet" UI with a single combined status & navigation bar
                 mDeviceType = DEVICE_TABLET;
             }
+
+		    // tmtmtm
+			final String USE_LANDSCAPE_UI_PERSIST_PROP = "persist.sys.use_landscape_mode";
+			final String USE_LANDSCAPE_UI_DEFAULT = "0";
+		    String useLandscapeMode = SystemProperties.get(USE_LANDSCAPE_UI_PERSIST_PROP,
+		                                                       USE_LANDSCAPE_UI_DEFAULT);
+		    if("1".equals(useLandscapeMode)) {
+                mDeviceType = DEVICE_TABLET;
+		    }
         }
         return mDeviceType;
     }

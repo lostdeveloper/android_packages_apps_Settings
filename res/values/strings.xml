@@ -3007,6 +3007,7 @@
     <string name="usb_audio_category">USB Audio</string>
     <string name="usb_info_category">USB Information</string>
     <string name="usb_system_category">System</string>
+    <string name="usb_other_category">Other</string>
 
     <!-- Fixed Installation -->
     <string name="fixed_installation_title">Fixed installation mode</string>
@@ -3027,6 +3028,10 @@
     <!-- landscape -->
     <string name="landscape_mode_title">Landscape UI</string>
     <string name="landscape_mode_summary">Mode change requires reboot.</string>
+
+    <!-- authors -->
+    <string name="usbrom_authors_title">Authors</string>
+    <string name="usbrom_authors_summary">Timur Mehrvarz, Jack Norris, b0bd</string>
 
 
     <!-- Development Settings.  the title for the item to take the user to Development settings.  Development settings are settings meant for application developers.  -->

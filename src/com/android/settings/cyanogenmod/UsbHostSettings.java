@@ -219,8 +219,12 @@ public class UsbHostSettings extends SettingsPreferenceFragment
 					switch (which){
 					case DialogInterface.BUTTON_POSITIVE:
 						//Yes button clicked
-			            activateLandscapeModeBuildProp((Boolean)newValue);
-						break;
+						//activateLandscapeModeBuildProp((Boolean)newValue);
+        				SystemProperties.set(USE_LANDSCAPE_UI_PERSIST_PROP, (Boolean)newValue ? "1" : "0");
+        				android.os.PowerManager pm = 
+        				  (android.os.PowerManager)getSystemService(android.content.Context.POWER_SERVICE);
+        				pm.reboot("switching UI");
+        				break;
 
 					case DialogInterface.BUTTON_NEGATIVE:
 						//No button clicked
@@ -246,7 +250,8 @@ public class UsbHostSettings extends SettingsPreferenceFragment
 		// requires SU
         SystemProperties.set(USE_LANDSCAPE_UI_PERSIST_PROP, state ? "1" : "0");
 
-		String replace= state?"160":"213";
+/*
+		String replace= state?"187":"213";
         Log.i(TAG, "activateLandscapeModeBuildProp replace="+replace);
 		try {
 		    FileInputStream fis = new FileInputStream("/system/build.prop");
@@ -271,6 +276,7 @@ public class UsbHostSettings extends SettingsPreferenceFragment
                                 "cp /data/build.prop /system && " +
                                 "mount -o ro,remount -t yaffs2 /dev/block/mtdblock4 /system && " +
                                 "reboot now'";
+	        //String cmd = "su -c 'reboot now'";
 	        Log.i(TAG, "activateLandscapeModeBuildProp cmd="+cmd);
 			Process p = Runtime.getRuntime().exec("su");
 			DataOutputStream os = new DataOutputStream(p.getOutputStream());  
@@ -286,6 +292,8 @@ public class UsbHostSettings extends SettingsPreferenceFragment
 	        Log.e(TAG, "activateLandscapeModeBuildProp",e);
 		}
         return false;
+*/
+        return true;
     }
 }
 
