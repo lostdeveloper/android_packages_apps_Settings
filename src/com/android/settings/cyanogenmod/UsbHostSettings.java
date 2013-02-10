@@ -48,11 +48,12 @@ public class UsbHostSettings extends SettingsPreferenceFragment
     private static final String FI_MODE_FILE = "/sys/kernel/usbhost/usbhost_fixed_install_mode";
     private static final String FI_MODE_PREF = "fixed_installation";   // from res/values/strings.xml
     private CheckBoxPreference mFiModePref;
+	private static final String USE_FI_MODE_PROP = "persist.sys.use_fi_mode";
+    private static final String USE_FI_MODE_DEFAULT = "1";
 
     private static final String FASTCHARGE_IN_HOSTMODE_FILE = "/sys/kernel/usbhost/usbhost_fastcharge_in_host_mode";
     private static final String FASTCHARGE_IN_HOSTMODE_PREF = "fastcharge_in_host_mode";   // from res/values/strings.xml
     private CheckBoxPreference mFastChargeInHostModePref;
-  //private SwitchPreference mFastChargeInHostModePref;
 	private static final String USE_FASTCHARGE_IN_HOSTMODE_PROP = "persist.sys.use_fcharge_host";
     private static final String USE_FASTCHARGE_IN_HOSTMODE_DEFAULT = "0";
 
@@ -66,7 +67,6 @@ public class UsbHostSettings extends SettingsPreferenceFragment
     private CheckBoxPreference mHpOnBootPref;
 
     private static final String LANDSCAPE_UI_PREF = "landscape_mode";   // from res/values/strings.xml
-  //private CheckBoxPreference mLandscapeUIPref;
     private SwitchPreference mLandscapeUIPref;
     private static final String USE_LANDSCAPE_UI_PERSIST_PROP = "persist.sys.use_landscape_mode";
     private static final String USE_LANDSCAPE_UI_DEFAULT = "0";
@@ -83,12 +83,9 @@ public class UsbHostSettings extends SettingsPreferenceFragment
         PreferenceScreen prefSet = getPreferenceScreen();
         mFiModePref = (CheckBoxPreference) prefSet.findPreference(FI_MODE_PREF);
         mFastChargeInHostModePref = (CheckBoxPreference) prefSet.findPreference(FASTCHARGE_IN_HOSTMODE_PREF);
-      //mFastChargeInHostModePref = (SwitchPreference) prefSet.findPreference(FASTCHARGE_IN_HOSTMODE_PREF);
-      //mFastChargeInHostModePref.setOnPreferenceChangeListener(this);
 
         mHpWiredAccessoryPref = (CheckBoxPreference) prefSet.findPreference(HP_WIRED_ACCESSORY_PREF);
         mHpOnBootPref = (CheckBoxPreference) prefSet.findPreference(HP_ON_BOOT_PREF);
-      //mLandscapeUIPref = (CheckBoxPreference) prefSet.findPreference(LANDSCAPE_UI_PREF);
         mLandscapeUIPref = (SwitchPreference) prefSet.findPreference(LANDSCAPE_UI_PREF);
         mLandscapeUIPref.setOnPreferenceChangeListener(this);
         String temp;
@@ -106,14 +103,11 @@ public class UsbHostSettings extends SettingsPreferenceFragment
             mFiModePref.setChecked("1".equals(temp));
         }
 
-		// hotplug-on-boot is default on in the kernel + it's checkbox is disabled 
+		// hotplug-on-boot is default on in the kernel; make checkbox inaccessible
         mHpOnBootPref.setEnabled(false);
         if((temp = Utils.fileReadOneLine(HP_ON_BOOT_FILE)) != null) {
             mHpOnBootPref.setChecked("1".equals(temp));
         }
-
-		// landscape is off + it's checkbox is disabled 
-        //mLandscapeUIPref.setEnabled(false);
 
         if (getPreferenceManager() != null) {
 
@@ -173,10 +167,11 @@ public class UsbHostSettings extends SettingsPreferenceFragment
 			    mFiModePref.setChecked(!mFiModePref.isChecked()); // undo
 			} else
             if (Utils.fileWriteOneLine(FI_MODE_FILE, mFiModePref.isChecked() ? "1" : "0")) {
-                Log.i(TAG, "onPreferenceTreeClick value changed");
+	            SystemProperties.set(USE_FI_MODE_PROP, mFiModePref.isChecked() ? "1" : "0");
+                Log.i(TAG, "onPreferenceTreeClick mFiModePref value changed");
                 return true;
             }
-            Log.i(TAG, "onPreferenceTreeClick failed");
+            Log.i(TAG, "onPreferenceTreeClick mFiModePref failed");
 
         } else if(preference == mFastChargeInHostModePref) {
             Log.i(TAG, "onPreferenceTreeClick mFastChargeInHostModePref checked="+mFastChargeInHostModePref.isChecked());
@@ -211,7 +206,6 @@ public class UsbHostSettings extends SettingsPreferenceFragment
     public boolean onPreferenceChange(Preference preference, final Object newValue) {
         if (preference.getKey().equals(LANDSCAPE_UI_PREF)) {
             Log.i(TAG, "onPreferenceChange mLandscapeUIPref checked="+newValue);
-            //activateLandscapeModeBuildProp((Boolean)newValue);
 
 			DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
 				@Override
@@ -243,14 +237,13 @@ public class UsbHostSettings extends SettingsPreferenceFragment
         return false;
     }
 
-
     
+/*
     private boolean activateLandscapeModeBuildProp(boolean state) {
-		// patch "ro.sf.lcd_density=xxx" 213 -> 160 or 170  	
+		// patch "ro.sf.lcd_density=xxx" 213 -> 160 or 170 in /data/build.prop
 		// requires SU
         SystemProperties.set(USE_LANDSCAPE_UI_PERSIST_PROP, state ? "1" : "0");
 
-/*
 		String replace= state?"187":"213";
         Log.i(TAG, "activateLandscapeModeBuildProp replace="+replace);
 		try {
@@ -276,7 +269,6 @@ public class UsbHostSettings extends SettingsPreferenceFragment
                                 "cp /data/build.prop /system && " +
                                 "mount -o ro,remount -t yaffs2 /dev/block/mtdblock4 /system && " +
                                 "reboot now'";
-	        //String cmd = "su -c 'reboot now'";
 	        Log.i(TAG, "activateLandscapeModeBuildProp cmd="+cmd);
 			Process p = Runtime.getRuntime().exec("su");
 			DataOutputStream os = new DataOutputStream(p.getOutputStream());  
@@ -292,8 +284,7 @@ public class UsbHostSettings extends SettingsPreferenceFragment
 	        Log.e(TAG, "activateLandscapeModeBuildProp",e);
 		}
         return false;
-*/
-        return true;
     }
+*/
 }
 

@@ -60,14 +60,14 @@
             android:persistent="true"/>
     </PreferenceCategory>
 
-    <!--PreferenceCategory android:key="usb_other_category"
-            android:title="@string/usb_other_category" >
+    <PreferenceCategory android:key="usb_authors_category"
+            android:title="@string/usb_authors_category" >
 		<Preference android:key="authors"
 		    style="?android:attr/preferenceInformationStyle"
 		    android:title="@string/usbrom_authors_title"
 		    android:summary="@string/usbrom_authors_summary"
 		    android:persistent="false" />
-    </PreferenceCategory-->
+    </PreferenceCategory>
 
 </PreferenceScreen>
 
