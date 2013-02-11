@@ -174,7 +174,7 @@ public class BootReceiver extends BroadcastReceiver {
 		// useFiMode=1 is boot default, see: arch/arm/mach-tegra/usbhost.c
 		if("0".equals(useFiMode)) {
             if (Utils.fileWriteOneLine(FI_MODE_FILE, "0")) {
-		        Log.i(TAG, "usbRomSettings useFiMode switched from FI to OTG mode");
+		        Log.i(TAG, "usbRomSettings switched from FI to OTG mode");
 			}
 		}
 
@@ -186,6 +186,7 @@ public class BootReceiver extends BroadcastReceiver {
 		if("1".equals(useBootWithAdbNetwork)) {
 		    Settings.Secure.putInt(ctx.getContentResolver(),
 		            Settings.Secure.ADB_PORT, 5555);
+	        Log.i(TAG, "usbRomSettings activated ADB network");
 		}
    }
 }
