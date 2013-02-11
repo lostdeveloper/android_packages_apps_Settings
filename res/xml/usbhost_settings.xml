@@ -58,6 +58,11 @@
             android:title="@string/landscape_mode_title"
             android:summary="@string/landscape_mode_summary"
             android:persistent="true"/>
+        <com.android.settings.WrappingSwitchPreference
+            android:key="adb_over_network_on_boot"
+            android:title="@string/adb_over_network_on_boot_title"
+            android:summary="@string/adb_over_network_on_boot_summary"
+            android:persistent="true"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:key="usb_authors_category"

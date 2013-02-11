@@ -25,6 +25,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.android.settings.Utils;
+import android.provider.Settings; // tmtmtm
 
 import java.util.Arrays;
 import java.util.List;
@@ -175,6 +176,16 @@ public class BootReceiver extends BroadcastReceiver {
             if (Utils.fileWriteOneLine(FI_MODE_FILE, "0")) {
 		        Log.i(TAG, "usbRomSettings useFiMode switched from FI to OTG mode");
 			}
+		}
+
+		final String BOOT_WITH_ADB_OVER_NETWORK_PROP = "persist.sys.boot_adb_network";
+		final String BOOT_WITH_ADB_OVER_NETWORK_DEFAULT = "0";
+        String useBootWithAdbNetwork = SystemProperties.get(BOOT_WITH_ADB_OVER_NETWORK_PROP,
+ 	                                                        BOOT_WITH_ADB_OVER_NETWORK_DEFAULT);
+		Log.i(TAG, "usbRomSettings useBootWithAdbNetwork="+useBootWithAdbNetwork);
+		if("1".equals(useBootWithAdbNetwork)) {
+		    Settings.Secure.putInt(ctx.getContentResolver(),
+		            Settings.Secure.ADB_PORT, 5555);
 		}
    }
 }

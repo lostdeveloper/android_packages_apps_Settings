@@ -3029,6 +3029,9 @@
     <string name="landscape_mode_title">Landscape UI</string>
     <string name="landscape_mode_summary">Mode change requires reboot.</string>
 
+    <string name="adb_over_network_on_boot_title">Boot with ADB over network</string>
+    <string name="adb_over_network_on_boot_summary">Enable TCP/IP over network interfaces (Wi-Fi, USB networks) on every restart.</string>
+
     <!-- authors -->
     <string name="usbrom_authors_title">Timur Mehrvarz</string>
     <string name="usbrom_authors_summary">Jack Norris (Matthew Redman), b0bd</string>

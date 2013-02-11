@@ -71,6 +71,11 @@ public class UsbHostSettings extends SettingsPreferenceFragment
     private static final String USE_LANDSCAPE_UI_PERSIST_PROP = "persist.sys.use_landscape_mode";
     private static final String USE_LANDSCAPE_UI_DEFAULT = "0";
 
+    private static final String BOOT_WITH_ADB_OVER_NETWORK_PREF = "adb_over_network_on_boot";   // from res/values/strings.xml
+    private SwitchPreference mBootWithAdbNetworkPref;
+    private static final String BOOT_WITH_ADB_OVER_NETWORK_PROP = "persist.sys.boot_adb_network";
+    private static final String BOOT_WITH_ADB_OVER_NETWORK_DEFAULT = "0";
+
     //private AlertDialog alertDialog;
 
     @Override
@@ -86,8 +91,13 @@ public class UsbHostSettings extends SettingsPreferenceFragment
 
         mHpWiredAccessoryPref = (CheckBoxPreference) prefSet.findPreference(HP_WIRED_ACCESSORY_PREF);
         mHpOnBootPref = (CheckBoxPreference) prefSet.findPreference(HP_ON_BOOT_PREF);
+
         mLandscapeUIPref = (SwitchPreference) prefSet.findPreference(LANDSCAPE_UI_PREF);
         mLandscapeUIPref.setOnPreferenceChangeListener(this);
+
+        mBootWithAdbNetworkPref = (SwitchPreference) prefSet.findPreference(BOOT_WITH_ADB_OVER_NETWORK_PREF);
+        mBootWithAdbNetworkPref.setOnPreferenceChangeListener(this);
+
         String temp;
 
 		int curHostMode = 0;
@@ -120,7 +130,13 @@ public class UsbHostSettings extends SettingsPreferenceFragment
 
             String useLandscapeMode = SystemProperties.get(USE_LANDSCAPE_UI_PERSIST_PROP,
                                                            USE_LANDSCAPE_UI_DEFAULT);
+            Log.i(TAG, "onCreate useLandscapeMode="+useLandscapeMode);
             mLandscapeUIPref.setChecked("1".equals(useLandscapeMode));
+
+            String useBootWithAdbNetwork = SystemProperties.get(BOOT_WITH_ADB_OVER_NETWORK_PROP,
+	                                                            BOOT_WITH_ADB_OVER_NETWORK_DEFAULT);
+            Log.i(TAG, "onCreate useBootWithAdbNetwork="+useBootWithAdbNetwork);
+            mBootWithAdbNetworkPref.setChecked("1".equals(useBootWithAdbNetwork));
 
 			String useFastChargeInHostMode = SystemProperties.get(USE_FASTCHARGE_IN_HOSTMODE_PROP,
 			                                                      USE_FASTCHARGE_IN_HOSTMODE_DEFAULT);
@@ -233,11 +249,16 @@ public class UsbHostSettings extends SettingsPreferenceFragment
 				.setNegativeButton("No", dialogClickListener).show();
             return true;
         }
-        //Log.i(TAG, "onPreferenceChange not implemented "+newValue);
+
+        if (preference.getKey().equals(BOOT_WITH_ADB_OVER_NETWORK_PREF)) {
+            Log.i(TAG, "onPreferenceChange mBootWithAdbNetworkPref checked="+newValue);
+			SystemProperties.set(BOOT_WITH_ADB_OVER_NETWORK_PROP, (Boolean)newValue ? "1" : "0");
+            return true;
+        }
+
         return false;
     }
-
-    
+   
 /*
     private boolean activateLandscapeModeBuildProp(boolean state) {
 		// patch "ro.sf.lcd_density=xxx" 213 -> 160 or 170 in /data/build.prop
