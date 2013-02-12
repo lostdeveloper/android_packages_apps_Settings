@@ -93,10 +93,12 @@ public class UsbHostSettings extends SettingsPreferenceFragment
         mHpOnBootPref = (CheckBoxPreference) prefSet.findPreference(HP_ON_BOOT_PREF);
 
         mLandscapeUIPref = (SwitchPreference) prefSet.findPreference(LANDSCAPE_UI_PREF);
-        mLandscapeUIPref.setOnPreferenceChangeListener(this);
+        if(mLandscapeUIPref!=null)
+	        mLandscapeUIPref.setOnPreferenceChangeListener(this);
 
         mBootWithAdbNetworkPref = (SwitchPreference) prefSet.findPreference(BOOT_WITH_ADB_OVER_NETWORK_PREF);
-        mBootWithAdbNetworkPref.setOnPreferenceChangeListener(this);
+        if(mBootWithAdbNetworkPref!=null)
+	        mBootWithAdbNetworkPref.setOnPreferenceChangeListener(this);
 
         String temp;
 
@@ -136,7 +138,8 @@ public class UsbHostSettings extends SettingsPreferenceFragment
             String useBootWithAdbNetwork = SystemProperties.get(BOOT_WITH_ADB_OVER_NETWORK_PROP,
 	                                                            BOOT_WITH_ADB_OVER_NETWORK_DEFAULT);
             Log.i(TAG, "onCreate useBootWithAdbNetwork="+useBootWithAdbNetwork);
-            mBootWithAdbNetworkPref.setChecked("1".equals(useBootWithAdbNetwork));
+            if(mBootWithAdbNetworkPref!=null)
+	            mBootWithAdbNetworkPref.setChecked("1".equals(useBootWithAdbNetwork));
 
 			String useFastChargeInHostMode = SystemProperties.get(USE_FASTCHARGE_IN_HOSTMODE_PROP,
 			                                                      USE_FASTCHARGE_IN_HOSTMODE_DEFAULT);
