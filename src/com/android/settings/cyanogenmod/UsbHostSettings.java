@@ -28,7 +28,6 @@ import android.preference.ListPreference;
 import android.preference.PreferenceScreen;
 import android.util.Log;
 import android.app.AlertDialog.Builder;
-//import android.content.Context;
 
 import com.android.settings.R;
 import com.android.settings.SettingsPreferenceFragment;
@@ -42,6 +41,8 @@ import java.io.*;
 public class UsbHostSettings extends SettingsPreferenceFragment
         implements Preference.OnPreferenceChangeListener {
     private static final String TAG = "UsbHostSettings";
+
+    private static final String USBROM_ADMIN_FILE = "/data/usbrom_admin";
 
     private static final String HOST_MODE_FILE = "/sys/kernel/usbhost/usbhost_hostmode";
 
@@ -80,12 +81,21 @@ public class UsbHostSettings extends SettingsPreferenceFragment
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        String temp;
+
         super.onCreate(savedInstanceState);
         //context = this;
 
         addPreferencesFromResource(R.xml.usbhost_settings);
-
         PreferenceScreen prefSet = getPreferenceScreen();
+
+		int usbromAdmin=0;
+        if((temp = Utils.fileReadOneLine(USBROM_ADMIN_FILE)) != null) {
+            if("1".equals(temp))
+            	usbromAdmin=1;
+        }
+        Log.i(TAG, "onCreate usbromAdmin="+usbromAdmin);
+
         mFiModePref = (CheckBoxPreference) prefSet.findPreference(FI_MODE_PREF);
         mFastChargeInHostModePref = (CheckBoxPreference) prefSet.findPreference(FASTCHARGE_IN_HOSTMODE_PREF);
 
@@ -96,11 +106,14 @@ public class UsbHostSettings extends SettingsPreferenceFragment
         if(mLandscapeUIPref!=null)
 	        mLandscapeUIPref.setOnPreferenceChangeListener(this);
 
-        mBootWithAdbNetworkPref = (SwitchPreference) prefSet.findPreference(BOOT_WITH_ADB_OVER_NETWORK_PREF);
-        if(mBootWithAdbNetworkPref!=null)
-	        mBootWithAdbNetworkPref.setOnPreferenceChangeListener(this);
-
-        String temp;
+	    mBootWithAdbNetworkPref = (SwitchPreference) prefSet.findPreference(BOOT_WITH_ADB_OVER_NETWORK_PREF);
+	    if(mBootWithAdbNetworkPref!=null) {
+			if(usbromAdmin>0) {
+			    mBootWithAdbNetworkPref.setOnPreferenceChangeListener(this);
+			} else {
+		        mBootWithAdbNetworkPref.setEnabled(false);
+			}
+		}
 
 		int curHostMode = 0;
         if((temp = Utils.fileReadOneLine(HOST_MODE_FILE)) != null) {
